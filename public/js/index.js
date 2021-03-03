@@ -1,11 +1,13 @@
 const LoginBtn = document.querySelector('#login');
 const GetUsersBtn = document.querySelector('#getUsers');
 const GetWeatherBtn = document.querySelector('#getWeather');
+const GetCategoryForTree = document.querySelector('#getCategoryForTree');
 
 
 const AddCategoryBtn = document.querySelector('#addCategory');
 const GetCategoryBtn = document.querySelector('#getCategory');
 const DeleteCategoryBtn = document.querySelector('#deleteCategory');
+
 var token;
 
 LoginBtn.addEventListener('click', () => {
@@ -45,6 +47,12 @@ GetCategoryBtn.addEventListener('click', () => {
 
 DeleteCategoryBtn.addEventListener('click', () => {
     axios.delete('/manager/category/delete', { headers: { Authorization: token } }).then(res => {
+        console.log(res.data);
+    })
+})
+
+GetCategoryForTree.addEventListener('click', () => {
+    axios.get('/manager/category/tree', { headers: { Authorization: token } }).then(res => {
         console.log(res.data);
     })
 })

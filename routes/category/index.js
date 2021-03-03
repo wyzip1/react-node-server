@@ -40,6 +40,7 @@ module.exports = function categoryRouter(Category) {
                 res.json({ status: 1, meta: { msg: '添加分类异常, 请重新尝试' } })
             });
     })
+
     // 获取分类列表
     router.get('/list', (req, res) => {
         const parentId = req.query.parentId || '0';
@@ -50,6 +51,30 @@ module.exports = function categoryRouter(Category) {
             res.json({ status: 1, meta: { msg: '获取分类列表异常，请重新尝试' } })
         });
     });
+
+    // 获取树形分类 -----------
+    router.get('/tree', async (req, res) => {
+        try {
+            let treeData = [];
+            const getTree = async (obj) => {
+                let d = obj ? obj : { id: '0' };
+                let data = await Category.find({ parentId: d.id });
+                if (data.length) {
+                    if (!treeData.length) treeData = data;
+                    else obj._doc.children = data;
+                    for (let i of data) {
+                        await getTree(i);
+                    }
+                };
+            }
+            await getTree();
+            res.json({ status: 0, meta: { msg: '获取分类列表成功', data: treeData } });
+        } catch (err) {
+            console.log('获取分类列表异常：', err)
+            res.json({ status: 1, meta: { msg: '获取分类列表异常，请重新尝试' } });
+        }
+    })
+
     // 更新分类
     router.put('/update', (req, res) => {
         const { categoryId, categoryName } = req.body;

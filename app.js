@@ -1,8 +1,27 @@
-const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
+const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+
+const multer = require('multer');
+const storage = multer.diskStorage({
+    // 配置上传目录
+    destination: (req, file, cb) => {
+        cb(null, 'public/upload')
+    },
+    // 修改上传的文件名
+    filename: (req, file, cb) => {
+        // 根据时间戳生成文件名
+        const fileName = `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`
+        file.restName = fileName;
+        req.body = file;
+        cb(null, fileName);
+    }
+});
+
+const upload = multer({ storage });
+
 const jwt = require('jsonwebtoken');
 // 专门用于验证token的第三方中间件 express-jwt
 // const expressJWT = require('express-jwt');
@@ -18,8 +37,8 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'html');
 
 app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 // 配置expressJWT
@@ -51,26 +70,10 @@ app.use('/manager', (req, res, next) => {
     });
 });
 
-app.use('/manager', indexRouter);
+app.use('/manager', indexRouter(upload));
 
 app.use(function (req, res) {
     res.render('index');
-});
-
-// catch 404 and forward to error handler
-// app.use(function (req, res, next) {
-//     next(createError(404));
-// });
-
-// error handler
-app.use(function (err, req, res, next) {
-    // set locals, only providing error in development
-    res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-    // render the error page
-    res.status(err.status || 500);
-    res.render('error');
 });
 
 module.exports = app;
