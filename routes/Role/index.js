@@ -32,12 +32,13 @@ module.exports = function roleRouter(Role) {
     })
 
     router.put('/update', (req, res) => {
-        const { id, menus, auth_name } = req.body;
-        Role.findByIdAndUpdate(id, { menus, auth_time: Date.now(), auth_name }).then(data => {
-            res.json({ status: 0, meta: { msg: '修改角色权限成功', data } })
+        const { id, menus, auth_name, name } = req.body;
+        let updObj = name ? { name } : { menus, auth_time: Date.now(), auth_name }
+        Role.findByIdAndUpdate(id, updObj).then(data => {
+            res.json({ status: 0, meta: { msg: '修改角色信息成功', data } })
         }).catch(err => {
-            console.log('修改角色权限失败：', err);
-            return res.json({ status: 1, meta: { msg: '修改角色权限异常，请重新尝试' } });
+            console.log('修改角色信息失败', err);
+            return res.json({ status: 1, meta: { msg: '修改角色信息异常，请重新尝试' } });
         });
     });
 
