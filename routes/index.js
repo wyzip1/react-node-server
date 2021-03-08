@@ -5,6 +5,8 @@ const axios = require('axios');
 const category = require('./category')
 const product = require('./product')
 const role = require('./Role')
+const chart = require('./chart')
+const user = require('./user')
 const fs = require('fs');
 
 
@@ -17,13 +19,12 @@ module.exports = function (upload) {
     router.post('/login', (req, res) => {
         const { username, password } = req.body;
         Users.findOne(
-            { username, password },
-            { _id: 0 }
+            { username, password }
         ).then(user => {
             if (user) {
                 const token = 'Bearer ' + jwt.sign(user._doc, 'react', { expiresIn: 60 * 60 * 24 });
                 if (user.role_id) {
-                    Roles.findOne({ _id: user.role_id }).then(role => {
+                    Role.findOne({ _id: user.role_id }).then(role => {
                         user._doc.role = role.menus;
                         res.json({ status: 0, meta: { msg: '登陆成功', user, token } });
                     });
@@ -78,7 +79,8 @@ module.exports = function (upload) {
     router.use('/category', category(Category))
     router.use('/product', product(Product));
     router.use('/role', role(Role));
-
+    router.use('/chart', chart(Product, Category))
+    router.use('/user', user(Users));
     // catch 404 and forward to error handler
     router.use(function (req, res) {
         res.status(404);

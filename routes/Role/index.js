@@ -31,9 +31,18 @@ module.exports = function roleRouter(Role) {
         })
     })
 
+    router.get('/lists', (req, res) => {
+        Role.find({}).then(data => {
+            res.json({ status: 0, meta: { msg: '查询角色列表成功', data } });
+        }).catch(err => {
+            console.log('查询角色列表失败：', err);
+            res.json({ status: 1, meta: { msg: '角色列表查询异常，请重新尝试' } });
+        });
+    })
+
     router.put('/update', (req, res) => {
-        const { id, menus, auth_name, name } = req.body;
-        let updObj = name ? { name } : { menus, auth_time: Date.now(), auth_name }
+        const { id, menus, auth_name, auth_id, name } = req.body;
+        let updObj = name ? { name } : { menus, auth_time: Date.now(), auth_name, auth_id }
         Role.findByIdAndUpdate(id, updObj).then(data => {
             res.json({ status: 0, meta: { msg: '修改角色信息成功', data } })
         }).catch(err => {

@@ -5,6 +5,7 @@ const productSchema = new mongoose.Schema({
     categoryList: { type: Array, required: true },
     name: { type: String, required: true }, // 名称
     price: { type: Number, required: true }, // 价格
+    sales: { type: Number },
     desc: { type: String },
     status: { type: Number, default: 1 }, // 商品状态: 1:在售, 0: 下架了
     imgs: { type: Array, default: [] }, // n个图片文件名的json字符串

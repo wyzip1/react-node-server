@@ -7,7 +7,7 @@ module.exports = function productRouter(Product) {
         const { categoryList, name,
             desc, price, detail, imgs } = req.body;
         Product.create({
-            categoryList, name,
+            categoryList, name, sales: Math.floor(Math.random() * 5000 + 2000),
             desc: desc || '', price: price || 0,
             detail: detail || '', imgs: imgs || []
         }).then(data => {
